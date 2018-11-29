@@ -41,8 +41,15 @@ public class WxMsgCryptionUtils {
     }
 
 
+    /**
+     * 加密
+     * @return
+     */
+    public  static String encryptionCode(){
 
-
+//        https://blog.csdn.net/lwx0313/article/details/77164506  参考资料
+        return "";
+    }
 
 
 }
