@@ -1,8 +1,11 @@
 package com.example.wxthird.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.example.wxthird.service.WxService;
 import com.example.wxthird.utils.WxMsgCryptionUtils;
-import com.lorne.core.framework.utils.DateUtil;
+import com.example.wxthird.utils.XmlUtil;
 import com.qq.weixin.mp.aes.AesException;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * @author 侯存路
@@ -24,7 +29,7 @@ public class GetTicket {
 
 
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private WxService wxService;
 
 
     /**
@@ -40,23 +45,8 @@ public class GetTicket {
                              @RequestParam("nonce") String nonce,
                              @RequestParam("msg_signature") String msgSignature,
                              @RequestBody String postData){
-
-        System.out.println("timestamp = " + timestamp);
-        System.out.println("nonce = " + nonce);
-        System.out.println("msg_signature = " + msgSignature);
-        System.out.println("postData = " + postData);
-        System.out.println(DateUtil.formatDate(new Date() , DateUtil.FULL_DATE_TIME_FORMAT));
-
-        String  res = null;
-        try {
-            res = WxMsgCryptionUtils.decryptCode(msgSignature ,timestamp , nonce , postData );
-        } catch (AesException e) {
-            System.out.println(" Ticket 解密失败 " + e.getMessage());
-            e.printStackTrace();
-        }
-        System.out.println("res = " + res);
-
-        //redisTemplate.opsForValue().set("ticket" , wxComponentVerifyTicket.getComponentVerifyTicket());
+        System.out.println("timestamp-->"+timestamp+"/ nonce-->"+nonce +" / msg_signature-->"+msgSignature+" / postData-->"+postData);
+        wxService.getTicket(timestamp , nonce , msgSignature , postData);
         return  "success";
     }
 
