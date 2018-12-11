@@ -1,20 +1,13 @@
 package com.example.wxthird.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.example.wxthird.config.WxThirdConfig;
-import com.example.wxthird.model.WxUrl;
 import com.example.wxthird.service.WxService;
 import com.example.wxthird.utils.RedisKey;
 import com.example.wxthird.utils.RedisUtils;
 import com.example.wxthird.utils.WxMsgCryptionUtils;
 import com.example.wxthird.utils.XmlUtil;
 import com.example.wxthird.wxapi.WxApi;
-import com.example.wxthird.wxapi.model.ReqComponentToken;
-import com.example.wxthird.wxapi.model.ReqPreAuthCode;
-import com.example.wxthird.wxapi.model.ResComponentToken;
-import com.example.wxthird.wxapi.model.ResPreAuthCode;
-import com.lorne.core.framework.utils.http.HttpUtils;
+import com.example.wxthird.wxapi.model.*;
 import com.qq.weixin.mp.aes.AesException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -23,9 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author 侯存路
@@ -111,10 +102,11 @@ public class WxServiceImpl implements WxService {
 
 
 
-
     @Override
-    public String getAuthorizationInfo() {
-        return null;
+    public String getScanCodeAuthorization() {
+        String redirect_uri = "http://test.codingapi.com/wx/start.html";
+        String url = String.format(WxApi.SCANCODEAUTHORIZATION , wxThirdConfig.getAppid() ,getPreAuthCode() ,  redirect_uri );
+        return url;
     }
 
 

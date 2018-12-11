@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<head >
+    <meta charset="UTF-8">
+    <title>第三方平台</title>
+</head>
+<body>
+
+
+<h1> 方式一：授权注册页面扫码授权 </h1>
+<button id="one"> 点击获取 </button>
+
+
+
+</body>
+
+
+<script src="jquery-2.2.3.min.js"></script>
+<script type="text/javascript">
+
+    $("#one").click(function () {
+
+        $.get("/wx/getScanCodeAuthorization" , function (data) {
+            window.open(data);
+        })
+
+    })
+
+</script>
+
+</html>

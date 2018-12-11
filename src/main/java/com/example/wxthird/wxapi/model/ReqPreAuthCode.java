@@ -9,17 +9,18 @@ package com.example.wxthird.wxapi.model;
 public class ReqPreAuthCode {
 
 
-    private   String  componentAppId;
+    private   String  component_appid;
 
-    public ReqPreAuthCode(String componentAppId) {
-        this.componentAppId = componentAppId;
+
+    public ReqPreAuthCode(String component_appid) {
+        this.component_appid = component_appid;
     }
 
-    public String getComponentAppId() {
-        return componentAppId;
+    public String getComponent_appid() {
+        return component_appid;
     }
 
-    public void setComponentAppId(String componentAppId) {
-        this.componentAppId = componentAppId;
+    public void setComponent_appid(String component_appid) {
+        this.component_appid = component_appid;
     }
 }

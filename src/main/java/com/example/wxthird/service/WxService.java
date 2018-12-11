@@ -34,9 +34,9 @@ public interface WxService {
 
 
 
-    /**
-     * 使用授权码换取公众号或小程序的接口调用凭据和授权信息
-     */
-    String  getAuthorizationInfo();
 
+
+
+
+    String getScanCodeAuthorization();
 }
