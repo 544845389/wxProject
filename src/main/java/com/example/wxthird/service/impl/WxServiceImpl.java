@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,6 +54,18 @@ public class WxServiceImpl implements WxService {
 
     @Override
     public String getPreAuthCode() {
+        String   preAuthCode ="";
+
+        Object o  =  redisTemplate.opsForValue().get("pre_auth_code");
+        if(!ObjectUtils.isEmpty(o)){
+            preAuthCode = o.toString();
+            int  surplus =  redisTemplate.getExpire("pre_auth_code" ,TimeUnit.SECONDS ).intValue();
+            if(surplus > 600) {
+                System.out.println("获取旧的 preAuthCode --->"+preAuthCode);
+                return  preAuthCode;
+            }
+        }
+
         String component_access_token = getComponentAccessToken();
         System.out.println("component_access_token = " + component_access_token);
 
@@ -63,8 +76,9 @@ public class WxServiceImpl implements WxService {
         String json  =  HttpUtils.postJson(url , JSON.toJSONString(map));
         System.out.println("json = " + json);
         JSONObject jsonObject =  JSON.parseObject(json);
-        String   pre_auth_code  =  jsonObject.getString("pre_auth_code");
-        return  pre_auth_code;
+        preAuthCode =  jsonObject.getString("pre_auth_code");
+        redisTemplate.opsForValue().set("pre_auth_code" , preAuthCode  , jsonObject.getLong("expires_in") , TimeUnit.SECONDS);
+        return  preAuthCode;
     }
 
 
@@ -74,10 +88,12 @@ public class WxServiceImpl implements WxService {
     @Override
     public String getComponentAccessToken() {
         String  componentAccessToken = "";
-        componentAccessToken =  redisTemplate.opsForValue().get("componentAccessToken").toString();
-        int  surplus =  redisTemplate.getExpire("componentAccessToken" ,TimeUnit.SECONDS ).intValue();
-        if(!StringUtils.isEmpty(componentAccessToken)){
+        Object o  =  redisTemplate.opsForValue().get("componentAccessToken");
+        if(!ObjectUtils.isEmpty(o)){
+            componentAccessToken = o.toString();
+            int  surplus =  redisTemplate.getExpire("componentAccessToken" ,TimeUnit.SECONDS ).intValue();
             if(surplus > 600) {
+                System.out.println("获取旧的 componentAccessToken --->"+componentAccessToken);
                     return  componentAccessToken;
             }
         }
@@ -98,8 +114,18 @@ public class WxServiceImpl implements WxService {
         String url = WxUrl.API_COMPONENT_TOKEN;
         String json  =  HttpUtils.postJson(url , JSON.toJSONString(map));
         JSONObject  jsonObject = JSON.parseObject(json);
-        redisTemplate.opsForValue().set("componentAccessToken" , jsonObject.get("component_access_token") , jsonObject.getLong("expires_in") , TimeUnit.SECONDS);
+        componentAccessToken =   jsonObject.get("component_access_token").toString();
+        System.out.println("获取新的 componentAccessToken --->"+componentAccessToken);
+        redisTemplate.opsForValue().set("componentAccessToken" , componentAccessToken  , jsonObject.getLong("expires_in") , TimeUnit.SECONDS);
         return componentAccessToken;
+    }
+
+
+
+
+    @Override
+    public String getAuthorizationInfo() {
+        return null;
     }
 
 
