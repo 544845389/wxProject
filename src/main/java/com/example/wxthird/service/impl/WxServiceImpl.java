@@ -5,15 +5,23 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.wxthird.config.WxThirdConfig;
 import com.example.wxthird.model.WxUrl;
 import com.example.wxthird.service.WxService;
+import com.example.wxthird.utils.RedisKey;
+import com.example.wxthird.utils.RedisUtils;
 import com.example.wxthird.utils.WxMsgCryptionUtils;
 import com.example.wxthird.utils.XmlUtil;
+import com.example.wxthird.wxapi.WxApi;
+import com.example.wxthird.wxapi.model.ReqComponentToken;
+import com.example.wxthird.wxapi.model.ReqPreAuthCode;
+import com.example.wxthird.wxapi.model.ResComponentToken;
+import com.example.wxthird.wxapi.model.ResPreAuthCode;
 import com.lorne.core.framework.utils.http.HttpUtils;
 import com.qq.weixin.mp.aes.AesException;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +45,10 @@ public class WxServiceImpl implements WxService {
     private WxThirdConfig wxThirdConfig;
 
 
+    Logger logger = LoggerFactory.getLogger(WxServiceImpl.class);
+
+
+
     @Override
     public void getTicket(String timestamp, String nonce, String msgSignature, String postData) {
         String  res = null;
@@ -46,8 +58,8 @@ public class WxServiceImpl implements WxService {
             e.printStackTrace();
         }
         Map<String,String> map = XmlUtil.xml2mapWithAttr(res , false);
-        redisTemplate.opsForValue().set("ticket" , map.get("ComponentVerifyTicket"));
-        System.out.println("ticket 存储成功 >>>" + JSON.toJSONString(map));
+        logger.info(" ticket 存储成功 >>> {}" , map);
+        redisTemplate.opsForValue().set(RedisKey.ticket, map.get("ComponentVerifyTicket"));
     }
 
 
@@ -56,28 +68,18 @@ public class WxServiceImpl implements WxService {
     public String getPreAuthCode() {
         String   preAuthCode ="";
 
-        Object o  =  redisTemplate.opsForValue().get("pre_auth_code");
-        if(!ObjectUtils.isEmpty(o)){
-            preAuthCode = o.toString();
-            int  surplus =  redisTemplate.getExpire("pre_auth_code" ,TimeUnit.SECONDS ).intValue();
-            if(surplus > 600) {
-                System.out.println("获取旧的 preAuthCode --->"+preAuthCode);
-                return  preAuthCode;
-            }
+        preAuthCode  =   RedisUtils.getValueForKeyAndExpire(RedisKey.preAuthCode);
+        if(!StringUtils.isEmpty(preAuthCode)){
+            logger.info(" 获取存储的 preAuthCode --->" + preAuthCode);
+            return  preAuthCode;
         }
 
-        String component_access_token = getComponentAccessToken();
-        System.out.println("component_access_token = " + component_access_token);
+        String componentAccessToken = getComponentAccessToken();
+        logger.info("componentAccessToken = " + componentAccessToken);
 
-        Map<String,String> map = new HashMap<>();
-        map.put("component_appid", wxThirdConfig.getAppid());
+        ResPreAuthCode resPreAuthCode =  WxApi.apiCreatePreAuthCode(componentAccessToken , new ReqPreAuthCode(wxThirdConfig.getAppid()) );
+        preAuthCode =  resPreAuthCode.getPre_auth_code();
 
-        String url = WxUrl.API_CREATE_PREAUTHCODE+component_access_token;
-        String json  =  HttpUtils.postJson(url , JSON.toJSONString(map));
-        System.out.println("json = " + json);
-        JSONObject jsonObject =  JSON.parseObject(json);
-        preAuthCode =  jsonObject.getString("pre_auth_code");
-        redisTemplate.opsForValue().set("pre_auth_code" , preAuthCode  , jsonObject.getLong("expires_in") , TimeUnit.SECONDS);
         return  preAuthCode;
     }
 
@@ -88,35 +90,22 @@ public class WxServiceImpl implements WxService {
     @Override
     public String getComponentAccessToken() {
         String  componentAccessToken = "";
-        Object o  =  redisTemplate.opsForValue().get("componentAccessToken");
-        if(!ObjectUtils.isEmpty(o)){
-            componentAccessToken = o.toString();
-            int  surplus =  redisTemplate.getExpire("componentAccessToken" ,TimeUnit.SECONDS ).intValue();
-            if(surplus > 600) {
-                System.out.println("获取旧的 componentAccessToken --->"+componentAccessToken);
-                    return  componentAccessToken;
-            }
+        componentAccessToken =  RedisUtils.getValueForKeyAndExpire(RedisKey.componentAccessToken);
+        if(!StringUtils.isEmpty(componentAccessToken)){
+            logger.info(" 获取存储的 ComponentAccessToken --->" + componentAccessToken);
+            return  componentAccessToken;
         }
 
         /**
          * 重新获取  componentAccessToken
          */
-        String ticket =   redisTemplate.opsForValue().get("ticket").toString();
+        String ticket =   redisTemplate.opsForValue().get(RedisKey.ticket).toString();
         if(StringUtils.isEmpty(ticket)){
             throw new NullPointerException("获取 ticket 为空");
         }
 
-        Map<String,String> map = new HashMap<>();
-        map.put("component_appid", wxThirdConfig.getAppid());
-        map.put("component_appsecret", wxThirdConfig.getAppsecret());
-        map.put("component_verify_ticket", ticket);
-
-        String url = WxUrl.API_COMPONENT_TOKEN;
-        String json  =  HttpUtils.postJson(url , JSON.toJSONString(map));
-        JSONObject  jsonObject = JSON.parseObject(json);
-        componentAccessToken =   jsonObject.get("component_access_token").toString();
-        System.out.println("获取新的 componentAccessToken --->"+componentAccessToken);
-        redisTemplate.opsForValue().set("componentAccessToken" , componentAccessToken  , jsonObject.getLong("expires_in") , TimeUnit.SECONDS);
+        ResComponentToken resComponentToken =  WxApi.apiComponentToken(new ReqComponentToken(wxThirdConfig.getAppid() , wxThirdConfig.getAppsecret() ,  ticket));
+        componentAccessToken = resComponentToken.getComponent_access_token();
         return componentAccessToken;
     }
 
