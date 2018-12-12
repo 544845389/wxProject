@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.AlternativeJdkIdGenerator;
 
 import java.util.Map;
 
@@ -50,9 +51,27 @@ public class WxServiceImpl implements WxService {
             e.printStackTrace();
         }
         Map<String,String> map = XmlUtil.xml2mapWithAttr(res , false);
-        logger.info(" ticket 存储成功 >>> {}" , map);
-        redisTemplate.opsForValue().set(RedisKey.ticket, map.get("ComponentVerifyTicket"));
+        String type = map.get("InfoType");
+        switch (type){
+            case "component_verify_ticket":
+                // 存储 ticket
+                logger.info(" ticket 存储成功 >>> {}" , map);
+                redisTemplate.opsForValue().set(RedisKey.ticket, map.get("ComponentVerifyTicket"));
+              break;
+            case "authorized":
+                logger.info(" 授权成功通知 >>> " , map);
+             break;
+            case "unauthorized":
+                logger.info(" 取消授权通知 >>> " , map);
+                break;
+            case "updateauthorized":
+                logger.info(" 授权更新通知 >>> " , map);
+                break;
+            default:
+                break;
+        }
     }
+
 
 
 

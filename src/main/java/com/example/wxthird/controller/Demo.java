@@ -98,7 +98,7 @@ public class Demo {
 
 
     /**
-     * 获取授权方的帐号基本信息  (1)公众号获取
+     * 获取授权方的帐号基本信息
      * @return
      */
     @ResponseBody

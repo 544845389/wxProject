@@ -2,7 +2,6 @@ package com.example.wxthird.wxapi;
 
 import com.alibaba.fastjson.JSON;
 import com.example.wxthird.utils.RedisKey;
-import com.example.wxthird.utils.RedisUtils;
 import com.example.wxthird.wxapi.model.*;
 import com.lorne.core.framework.utils.http.HttpUtils;
 import org.apache.commons.lang.StringUtils;
@@ -82,15 +81,23 @@ public class WxApi {
 
 
     /**
-     * 获取授权方的帐号基本信息 (一 公众号获取)
+     * 获取授权方的帐号基本信息
      */
     public  static  String  API_GET_AUTHORIZER_INFO_PUBLIC =  "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token=";
 
 
+
     /**
-     * 获取授权方的帐号基本信息 (一 小程序获取)
+     * 获取授权方的选项设置信息
      */
-    public  static  String  API_GET_AUTHORIZER_INFO_SMALL_PROGRAM =  "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token=";
+    public  static  String  API_GET_AUTHORIZER_OPTION =  "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_option?component_access_token=";
+
+
+
+    /**
+     * 设置授权方的选项信息
+     */
+    public  static  String  API_SET_AUTHORIZER_OPTION =  "https://api.weixin.qq.com/cgi-bin/component/api_set_authorizer_option?component_access_token=";
 
 
 
@@ -172,7 +179,7 @@ public class WxApi {
 
 
     /**
-     * 获取授权方的帐号基本信息 (一 公众号获取)
+     * 获取授权方的帐号基本信息
      */
     public  static ResApiGetAuthorizerInfoPubic   apiGetAuthorizerInfoPubic( String  componentAccessToken  ,ReqApiGetAuthorizerInfoPubic  reqPubic){
         String url =  API_GET_AUTHORIZER_INFO_PUBLIC+componentAccessToken;
@@ -183,10 +190,42 @@ public class WxApi {
             throw  new NullPointerException("apiGetAuthorizerInfoPubic 获取失败！"+json);
         }
         return  resApiAuthorizerToken;
-
     }
 
 
+
+    /**
+     * 获取授权方的选项设置信息
+     * @param componentAccessToken
+     * @param reqApiGetAuthorizerOption
+     * @return
+     */
+     public static ResApiGetAuthorizerOption  apiGetAuthorizerOption(String componentAccessToken , ReqApiGetAuthorizerOption reqApiGetAuthorizerOption ){
+         String url =  API_GET_AUTHORIZER_OPTION + componentAccessToken;
+         String json  =  HttpUtils.postJson(url , JSON.toJSONString(reqApiGetAuthorizerOption));
+         System.out.println(" WxApi -- > apiGetAuthorizerOption --> "+json);
+         ResApiGetAuthorizerOption resApiGetAuthorizerOption =  JSON.parseObject(json , ResApiGetAuthorizerOption.class);
+         if(ObjectUtils.isEmpty(resApiGetAuthorizerOption.getAuthorizer_appid())){
+             throw  new NullPointerException("apiGetAuthorizerOption  获取失败！"+json);
+         }
+         return  resApiGetAuthorizerOption;
+    }
+
+
+
+    /**
+     *  设置授权方的选项信息
+     */
+    public  static  ResApiSetAuthorizerOption apiSetAuthorizerOption(String componentAccessToken , ReqApiSetAuthorizerOption reqApiSetAuthorizerOption){
+        String url =  API_SET_AUTHORIZER_OPTION + componentAccessToken;
+        String json  =  HttpUtils.postJson(url , JSON.toJSONString(reqApiSetAuthorizerOption));
+        System.out.println(" WxApi -- > apiSetAuthorizerOption --> "+json);
+        ResApiSetAuthorizerOption resApiSetAuthorizerOption =  JSON.parseObject(json , ResApiSetAuthorizerOption.class);
+        if(ObjectUtils.isEmpty(resApiSetAuthorizerOption.getErrmsg())){
+            throw  new NullPointerException("apiSetAuthorizerOption  获取失败！"+json);
+        }
+        return  resApiSetAuthorizerOption;
+    }
 
 
 
