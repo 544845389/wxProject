@@ -1,5 +1,6 @@
 package com.example.wxthird.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.example.wxthird.config.WxThirdConfig;
 import com.example.wxthird.service.WxService;
 import com.example.wxthird.utils.RedisKey;
@@ -101,12 +102,42 @@ public class WxServiceImpl implements WxService {
     }
 
 
+    @Override
+    public String queryAuth(String authorizationCode) {
+        ResApiQueryAuth resApiQueryAuth =   WxApi.apiQueryAuth(getComponentAccessToken() , new ReqApiQueryAuth(wxThirdConfig.getAppid() , authorizationCode) );
+        return JSON.toJSONString(resApiQueryAuth);
+    }
+
 
     @Override
     public String getScanCodeAuthorization() {
         String redirect_uri = "http://test.codingapi.com/wx/start.html";
         String url = String.format(WxApi.SCANCODEAUTHORIZATION , wxThirdConfig.getAppid() ,getPreAuthCode() ,  redirect_uri );
         return url;
+    }
+
+
+    @Override
+    public String getQuickAuthorization() {
+        String redirect_uri = "http://test.codingapi.com/wx/start.html";
+        String url = String.format(WxApi.BINDCOMPONENT , wxThirdConfig.getAppid() ,getPreAuthCode() ,  redirect_uri );
+        return url;
+    }
+
+
+
+    @Override
+    public ResApiAuthorizerToken getApiAuthorizerToken(String authorizerRefreshToken, String authorizerAppId) {
+        ResApiAuthorizerToken resApiAuthorizerToken =  WxApi.apiAuthorizerToken( getComponentAccessToken() , new ReqApiAuthorizerToken(wxThirdConfig.getAppid() , authorizerAppId , authorizerRefreshToken ));
+        return resApiAuthorizerToken;
+    }
+
+
+
+    @Override
+    public ResApiGetAuthorizerInfoPubic getAuthorizerInfo(String authorizerAppid) {
+        ResApiGetAuthorizerInfoPubic resApiGetAuthorizerInfoPubic =   WxApi.apiGetAuthorizerInfoPubic( getComponentAccessToken() , new ReqApiGetAuthorizerInfoPubic(wxThirdConfig.getAppid() , authorizerAppid ) );
+        return resApiGetAuthorizerInfoPubic;
     }
 
 

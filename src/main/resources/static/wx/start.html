@@ -5,7 +5,9 @@
 </head>
 <body>
 
+<h3>授权码 : <span id="authorizationCode">123</span></h3>
 
+<h3>授权码时效性(秒) : <span id="expiresIn">123</span></h3>
 
 </body>
 
@@ -14,8 +16,23 @@
 <script type="text/javascript">
 
     $(function () {
-            alert('123');
+
+        $("#authorizationCode").text(GetQueryString("auth_code"));
+
+        $("#expiresIn").text(GetQueryString("expires_in"));
+
     })
+
+
+
+    function GetQueryString(name) {
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)
+            return  unescape(r[2]);
+        return null;
+    }
+
 
 </script>
 

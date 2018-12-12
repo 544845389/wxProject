@@ -5,12 +5,15 @@ import com.example.wxthird.service.WxService;
 import com.example.wxthird.utils.RedisKey;
 import com.example.wxthird.wxapi.WxApi;
 import com.example.wxthird.wxapi.model.ReqApiQueryAuth;
+import com.example.wxthird.wxapi.model.ResApiAuthorizerToken;
+import com.example.wxthird.wxapi.model.ResApiGetAuthorizerInfoPubic;
 import com.example.wxthird.wxapi.model.ResApiQueryAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -31,20 +34,6 @@ public class Demo {
     private WxService wxService;
 
 
-
-    /**
-     * 授权注册页面扫码授权
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping("/componentLoginPage")
-    public  void componentLoginPage(){
-
-//        https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid=wx22bf3c141c8d8470&pre_auth_code=preauthcode@@@4RGRONo4zvAkekzPn6-3bUJMM63D2o_ZADG3hcyv3Bxif6D8FDnM-DPoltgFBQ3b&redirect_uri=http://test.codingapi.com/wx
-
-    }
-
-
     /**
      * 获取 获取预授权码
      * @return
@@ -63,25 +52,25 @@ public class Demo {
      */
     @ResponseBody
     @GetMapping("/getApiQueryAuth")
-    public  String api_query_auth(){
-        String code = wxService.getPreAuthCode();
-        String accessToken = wxService.getComponentAccessToken();
-        ResApiQueryAuth resApiQueryAuth =   WxApi.apiQueryAuth(accessToken , new ReqApiQueryAuth("wx22bf3c141c8d8470" ,code ));
-        System.out.println("resApiQueryAuth = " + JSON.toJSONString(resApiQueryAuth));
-        return     "";
-    }
+    public  String api_query_auth(@RequestParam("authorizationCode") String authorizationCode){
 
+        return wxService.queryAuth(authorizationCode);
+    }
 
 
 
     /**
-     *  html
+     * 获取（刷新）授权公众号或小程序的接口调用凭据（令牌）
      * @return
      */
-    @GetMapping("/getHtml")
-    public  String getHtml(){
-        return "index";
+    @ResponseBody
+    @GetMapping("/getApiAuthorizerToken")
+    public ResApiAuthorizerToken api_authorizer_token(
+            @RequestParam("authorizer_refresh_token") String authorizerRefreshToken ,
+            @RequestParam("authorizer_appid") String authorizerAppId ){
+        return  wxService.getApiAuthorizerToken(authorizerRefreshToken , authorizerAppId);
     }
+
 
 
     /**
@@ -95,6 +84,28 @@ public class Demo {
     }
 
 
+
+
+    /**
+     * 方式二：点击移动端链接快速授权
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("/getQuickAuthorization")
+    public  String getTwoUrl(){
+        return wxService.getQuickAuthorization();
+    }
+
+
+    /**
+     * 获取授权方的帐号基本信息  (1)公众号获取
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("/getAuthorizerInfo")
+    public ResApiGetAuthorizerInfoPubic getAuthorizerInfo(@RequestParam("authorizer_appid") String authorizer_appid){
+        return wxService.getAuthorizerInfo(authorizer_appid);
+    }
 
 
 

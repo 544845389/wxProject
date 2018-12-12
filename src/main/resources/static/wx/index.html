@@ -11,6 +11,10 @@
 
 
 
+<h1> 方式二：点击移动端链接快速授权 </h1>
+<button id="two"> 点击获取 </button>
+
+
 </body>
 
 
@@ -20,6 +24,15 @@
     $("#one").click(function () {
 
         $.get("/wx/getScanCodeAuthorization" , function (data) {
+            window.open(data);
+        })
+
+    })
+
+
+    $("#two").click(function () {
+
+        $.get("/wx/getQuickAuthorization" , function (data) {
             window.open(data);
         })
 

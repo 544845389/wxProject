@@ -68,6 +68,32 @@ public class WxApi {
     public  static  String SCANCODEAUTHORIZATION = "https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid=%s&pre_auth_code=%s&redirect_uri=%s";
 
 
+    /**
+     *  方式一：授权注册页面扫码授权
+     */
+    public  static  String BINDCOMPONENT = "https://mp.weixin.qq.com/safe/bindcomponent?action=bindcomponent&auth_type=3&no_scan=1&component_appid=%s&pre_auth_code=%s&redirect_uri=%s&auth_type=3#wechat_redirect";
+
+
+    /**
+     * 获取（刷新）授权公众号或小程序的接口调用凭据（令牌）
+     */
+    public  static  String  API_AUTHORIZER_TOKEN =  "https://api.weixin.qq.com /cgi-bin/component/api_authorizer_token?component_access_token=";
+
+
+
+    /**
+     * 获取授权方的帐号基本信息 (一 公众号获取)
+     */
+    public  static  String  API_GET_AUTHORIZER_INFO_PUBLIC =  "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token=";
+
+
+    /**
+     * 获取授权方的帐号基本信息 (一 小程序获取)
+     */
+    public  static  String  API_GET_AUTHORIZER_INFO_SMALL_PROGRAM =  "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token=";
+
+
+
 
 
 
@@ -124,6 +150,43 @@ public class WxApi {
         }
         return  resApiQueryAuth;
     }
+
+
+
+    /**
+     * 获取（刷新）授权公众号或小程序的接口调用凭据（令牌）
+     * @param reqApiAuthorizerToken
+     * @return
+     */
+    public  static  ResApiAuthorizerToken   apiAuthorizerToken(String componentAccessToken ,   ReqApiAuthorizerToken reqApiAuthorizerToken ){
+        String url =  API_AUTHORIZER_TOKEN+componentAccessToken;
+        String json  =  HttpUtils.postJson(url , JSON.toJSONString(reqApiAuthorizerToken));
+        System.out.println(" WxApi -- > apiAuthorizerToken --> "+json);
+        ResApiAuthorizerToken resApiAuthorizerToken =  JSON.parseObject(json , ResApiAuthorizerToken.class);
+        if(ObjectUtils.isEmpty(resApiAuthorizerToken.getAuthorizer_access_token())){
+            throw  new NullPointerException("apiAuthorizerToken 获取失败！"+json);
+        }
+        return  resApiAuthorizerToken;
+    }
+
+
+
+    /**
+     * 获取授权方的帐号基本信息 (一 公众号获取)
+     */
+    public  static ResApiGetAuthorizerInfoPubic   apiGetAuthorizerInfoPubic( String  componentAccessToken  ,ReqApiGetAuthorizerInfoPubic  reqPubic){
+        String url =  API_GET_AUTHORIZER_INFO_PUBLIC+componentAccessToken;
+        String json  =  HttpUtils.postJson(url , JSON.toJSONString(reqPubic));
+        System.out.println(" WxApi -- > apiGetAuthorizerInfoPubic --> "+json);
+        ResApiGetAuthorizerInfoPubic resApiAuthorizerToken =  JSON.parseObject(json , ResApiGetAuthorizerInfoPubic.class);
+        if(ObjectUtils.isEmpty(resApiAuthorizerToken.getAuthorizer_info())){
+            throw  new NullPointerException("apiGetAuthorizerInfoPubic 获取失败！"+json);
+        }
+        return  resApiAuthorizerToken;
+
+    }
+
+
 
 
 
