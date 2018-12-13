@@ -33,7 +33,7 @@ public class GetTicket {
 
 
     /**
-     * 获取 微信发送过来的 Ticket
+     * 获取 微信发送过来的 消息
      * @param timestamp
      * @param nonce
      * @param msgSignature

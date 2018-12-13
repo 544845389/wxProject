@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * @author 侯存路
  * @date 2018/12/11
  * @company codingApi
- * @description
+ * @description   微信授权流程接口
  */
 @Component
 public class WxApi {

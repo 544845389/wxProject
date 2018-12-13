@@ -10,13 +10,14 @@ import com.example.wxthird.utils.XmlUtil;
 import com.example.wxthird.wxapi.WxApi;
 import com.example.wxthird.wxapi.model.*;
 import com.qq.weixin.mp.aes.AesException;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.DocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.AlternativeJdkIdGenerator;
 
 import java.util.Map;
 
@@ -50,13 +51,13 @@ public class WxServiceImpl implements WxService {
         } catch (AesException e) {
             e.printStackTrace();
         }
-        Map<String,String> map = XmlUtil.xml2mapWithAttr(res , false);
-        String type = map.get("InfoType");
+        Map<String,Object> map = XmlUtil.xml2mapWithAttr(res , false);
+        String type = map.get("InfoType").toString();
         switch (type){
             case "component_verify_ticket":
                 // 存储 ticket
                 logger.info(" ticket 存储成功 >>> {}" , map);
-                redisTemplate.opsForValue().set(RedisKey.ticket, map.get("ComponentVerifyTicket"));
+                redisTemplate.opsForValue().set(RedisKey.ticket, map.get("ComponentVerifyTicket").toString());
               break;
             case "authorized":
                 logger.info(" 授权成功通知 >>> " , map);
@@ -67,9 +68,20 @@ public class WxServiceImpl implements WxService {
             case "updateauthorized":
                 logger.info(" 授权更新通知 >>> " , map);
                 break;
+            case "notify_third_fasteregister":
+                logger.info(" 注册审核事件推送 >>> " , map);
+                registerEventPush(map);
+                break;
             default:
                 break;
         }
+    }
+
+
+
+    private  void registerEventPush(Map<String,Object> map){
+        RegisterEventPush registerEventPush = new RegisterEventPush(map);
+        logger.info(" 注册审核事件推送 >>> " , registerEventPush);
     }
 
 

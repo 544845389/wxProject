@@ -1,13 +1,9 @@
 package com.example.wxthird.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.example.wxthird.service.WxService;
 import com.example.wxthird.utils.RedisKey;
-import com.example.wxthird.wxapi.WxApi;
-import com.example.wxthird.wxapi.model.ReqApiQueryAuth;
 import com.example.wxthird.wxapi.model.ResApiAuthorizerToken;
 import com.example.wxthird.wxapi.model.ResApiGetAuthorizerInfoPubic;
-import com.example.wxthird.wxapi.model.ResApiQueryAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
@@ -24,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping("/wx")
-public class Demo {
+public class WxThirdPartyAuth {
 
 
     @Autowired
