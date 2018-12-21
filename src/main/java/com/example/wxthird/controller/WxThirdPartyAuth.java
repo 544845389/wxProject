@@ -30,42 +30,42 @@ public class WxThirdPartyAuth {
     private WxService wxService;
 
 
-    /**
-     * 获取 获取预授权码
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping("/getPreAuthCode")
-    public  String getPreAuthCode(){
-      return     wxService.getPreAuthCode();
-    }
-
-
-
-    /**
-     * 使用授权码换取公众号或小程序的接口调用凭据和授权信息
-     * @return
-     */
-    @ResponseBody
-    @GetMapping("/getApiQueryAuth")
-    public  String api_query_auth(@RequestParam("authorizationCode") String authorizationCode){
-
-        return wxService.queryAuth(authorizationCode);
-    }
-
-
-
-    /**
-     * 获取（刷新）授权公众号或小程序的接口调用凭据（令牌）
-     * @return
-     */
-    @ResponseBody
-    @GetMapping("/getApiAuthorizerToken")
-    public ResApiAuthorizerToken api_authorizer_token(
-            @RequestParam("authorizer_refresh_token") String authorizerRefreshToken ,
-            @RequestParam("authorizer_appid") String authorizerAppId ){
-        return  wxService.getApiAuthorizerToken(authorizerRefreshToken , authorizerAppId);
-    }
+//    /**
+//     * 获取 获取预授权码
+//     * @return
+//     */
+//    @ResponseBody
+//    @RequestMapping("/getPreAuthCode")
+//    public  String getPreAuthCode(){
+//      return     wxService.getPreAuthCode();
+//    }
+//
+//
+//
+//    /**
+//     * 使用授权码换取公众号或小程序的接口调用凭据和授权信息
+//     * @return
+//     */
+//    @ResponseBody
+//    @GetMapping("/getApiQueryAuth")
+//    public  String api_query_auth(@RequestParam("authorizationCode") String authorizationCode){
+//
+//        return wxService.queryAuth(authorizationCode);
+//    }
+//
+//
+//
+//    /**
+//     * 获取（刷新）授权公众号或小程序的接口调用凭据（令牌）
+//     * @return
+//     */
+//    @ResponseBody
+//    @GetMapping("/getApiAuthorizerToken")
+//    public ResApiAuthorizerToken api_authorizer_token(
+//            @RequestParam("authorizer_refresh_token") String authorizerRefreshToken ,
+//            @RequestParam("authorizer_appid") String authorizerAppId ){
+//        return  wxService.getApiAuthorizerToken(authorizerRefreshToken , authorizerAppId);
+//    }
 
 
 
@@ -93,27 +93,19 @@ public class WxThirdPartyAuth {
     }
 
 
-    /**
-     * 获取授权方的帐号基本信息
-     * @return
-     */
-    @ResponseBody
-    @GetMapping("/getAuthorizerInfo")
-    public ResApiGetAuthorizerInfoPubic getAuthorizerInfo(@RequestParam("authorizer_appid") String authorizer_appid){
-        return wxService.getAuthorizerInfo(authorizer_appid);
-    }
+
+//    /**
+//     * 获取授权方的帐号基本信息
+//     * @return
+//     */
+//    @ResponseBody
+//    @GetMapping("/getAuthorizerInfo")
+//    public ResApiGetAuthorizerInfoPubic getAuthorizerInfo(@RequestParam("authorizer_appid") String authorizer_appid){
+//        return wxService.getAuthorizerInfo(authorizer_appid);
+//    }
 
 
 
-
-
-    @ResponseBody
-    @GetMapping("/clear")
-    public  String clear(){
-        redisTemplate.opsForValue().set(RedisKey.componentAccessToken , "");
-        redisTemplate.opsForValue().set(RedisKey.preAuthCode , "");
-        return     "";
-    }
 
 
 

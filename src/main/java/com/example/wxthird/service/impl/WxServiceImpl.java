@@ -142,7 +142,7 @@ public class WxServiceImpl implements WxService {
 
     @Override
     public String getScanCodeAuthorization() {
-        String redirect_uri = "http://test.codingapi.com/wx/start.html";
+        String redirect_uri = "http://test.codingapi.com/wx/start.html?userId=1";
         String url = String.format(WxApi.SCANCODEAUTHORIZATION , wxThirdConfig.getAppid() ,getPreAuthCode() ,  redirect_uri );
         return url;
     }
@@ -150,7 +150,7 @@ public class WxServiceImpl implements WxService {
 
     @Override
     public String getQuickAuthorization() {
-        String redirect_uri = "http://test.codingapi.com/wx/start.html";
+        String redirect_uri = "http://test.codingapi.com/wx/start.html?userId=1";
         String url = String.format(WxApi.BINDCOMPONENT , wxThirdConfig.getAppid() ,getPreAuthCode() ,  redirect_uri );
         return url;
     }

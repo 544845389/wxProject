@@ -1,21 +1,11 @@
 package com.example.wxthird.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.example.wxthird.service.WxService;
-import com.example.wxthird.utils.WxMsgCryptionUtils;
-import com.example.wxthird.utils.XmlUtil;
-import com.qq.weixin.mp.aes.AesException;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Date;
-import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * @author 侯存路
